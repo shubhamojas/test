@@ -1,3 +1,25 @@
+# Define project information
+PROJECT_ID = "!(gcloud config get-value core/project)"  # @param {type:"string"}
+
+region_output = !gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-region])"
+LOCATION = region_output[0].strip()
+
+# Get project ID properly
+project_output = !gcloud config get-value core/project
+PROJECT_ID = project_output[0].strip()
+
+print("LOCATION:", LOCATION)
+print("PROJECT_ID:", PROJECT_ID)
+
+# Initialize Vertex AI
+import vertexai
+
+vertexai.init(project=PROJECT_ID, location=LOCATION)
+
+# Create the API client
+from google import genai
+client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
+
 # Task 3.1
 # use the following documentation to assist you complete this cell
 # https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/function-calling
@@ -158,3 +180,4 @@ print("\n-------Response--------")
 for response in responses:
     print(response.text, end="")
 	
+
